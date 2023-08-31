@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='predict.css')}}">
+</head>
+
+<body>
+
+<form action="./" style="margin: 1.5em 0em 0em 0.75em;">
+    <button class="button-30" role="button" id="home">Home</button>
+</form>
+    <div class="table_area">
+        <div class="card">
+
+            <form action="/predict_result" method="post">
+                <input type="hidden" name="model_name" value="{{models[0].model_name}}">
+                <input type="hidden" name="data_columns" value="{{models[0].data_columns}}">
+                <input type="hidden" name="pred_columns" value="{{models[0].pred_columns}}">
+                <input type="hidden" name="eq" value="{{eq}}">
+                <div class="heading">
+                    <div class="model-name">Model Name:</div>
+                    <div class="dynamic-content">{{models[0].model_name}}</div>
+                </div>
+                <table style="vertical-align: bottom;">
+                    {% set colvalue = models[0] %}
+                    {% for col_name in models[0].data_columns %}
+                    <tr>
+                        <th> {{col_name}}</th>
+                        <td>
+                            <div class="form__group field">
+                                <input type="number" class="form__field" name="{{col_name}}"
+                                    value="{% if colvalue[col_name] is defined %}{{colvalue[col_name]}}{% endif %}"
+                                    step="any" required>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% for col_name in models[0].pred_columns %}
+                    <tr>
+                        <th> {{col_name}}</th>
+                        <td>
+                            <div class="form__group field">
+                                <input type="number" class="form__field" name="{{col_name}}"
+                                    placeholder="Predicted Value"
+                                    value="{% if colvalue[col_name] is defined %}{{colvalue[col_name]}}{% endif %}"
+                                    step="any" disabled>
+
+                            </div>
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div class="submit_btn_div">
+                    <input type="submit" value="Submit" class="submit_btn">
+                </div>
+            </form>
+        </div>
+        <div class="equation">
+            <div style="display: flex;justify-content: space-evenly;margin-bottom: 0.8em;">Equations:</div>
+            {% for i in eq %}
+            <p>{{ i | safe }}</p>
+            <p>{{ '-' * i|length }}</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+</html>
