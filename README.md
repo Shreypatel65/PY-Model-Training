@@ -1,1 +1,1 @@
-Python Online Model Training 
+Python Online Model Training Using Django
