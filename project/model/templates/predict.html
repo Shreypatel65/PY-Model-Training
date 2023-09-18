@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Include the CSS file for styling -->
+    <link rel="stylesheet" href="{% static 'predict.css' %}">
+</head>
+
+<body>
+    <!-- Navigation button to go back to the home page -->
+    <form action="{% url 'index' %}" style="margin: 1.5em 0em 0em 0.75em;">
+        <button class="button-30" role="button" id="home">Home</button>
+    </form>
+
+    <!-- Table area for displaying and predicting data -->
+    <div class="table_area">
+        <div class="card">
+            <!-- Form for submitting predictions -->
+            <form action="{% url 'predict_result' model_name=models.model_name %}" method="post">
+                {% csrf_token %}
+
+                <!-- Hidden input fields for model information -->
+                <input type="hidden" name="model_name" value="{{models.model_name}}">
+                <input type="hidden" name="data_columns" value="{{models.input_data}}">
+                <input type="hidden" name="pred_columns" value="{{models.pred_data}}">
+                <input type="hidden" name="eq" value="{{eq}}">
+                <div class="heading">
+                    <div class="model-name">Model Name:</div>
+                    <!-- Display the model name -->
+                    <div class="dynamic-content">{{ models.model_name }}</div>
+                </div>
+                <table style="vertical-align: bottom;">
+                    <!-- Loop through data columns -->
+                    
+                    {% for col_name,col_value in models.input_data.items %}
+                    <tr>
+                        <th> {{col_name}}</th>
+                        <td>
+                            <!-- Input field for data input -->
+                            <div class="form__group field">
+                                <input type="number" class="form__field" name="{{col_name}}"
+                                    value="{% if col_value %}{{ col_value }}{% endif %}" step="any"
+                                    required>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                
+                    <!-- Loop through prediction columns -->
+                    {% for col_name,col_value in models.pred_data.items %}
+                    <tr>
+                        <th> {{col_name}}</th>
+                        <td>
+                            <!-- Input field for displaying predicted values (disabled) -->
+                            <div class="form__group field">
+                                <input type="number" class="form__field" name="{{col_name}}"
+                                    placeholder="Predicted Value"
+                                    value="{% if col_value %}{{ col_value }}{% endif %}" step="any"
+                                    disabled>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <!-- Submit button for making predictions -->
+                <div class="submit_btn_div">
+                    <input type="submit" value="Submit" class="submit_btn">
+                </div>
+            </form>
+        </div>
+        <!-- Equation section for displaying equations -->
+        <div class="equation">
+            <div style="display: flex;justify-content: space-evenly;margin-bottom: 0.8em;">Equations:</div>
+            <!-- Loop to display equations -->
+            {% for i in eq %}
+            <p>{{ i | safe }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% for i in models.pred_data %}
+        {{i}}
+    {% endfor %}
+</body>
+{{models}}
+</html>
